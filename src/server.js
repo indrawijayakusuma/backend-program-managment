@@ -20,8 +20,8 @@ const init = async () => {
   const winnerService = new WinnerService(redeemCodeService);
 
   const server = Hapi.server({
-    port: 3000,
-    host: 'localhost',
+    port: process.env.PORT,
+    host: process.env.HOST,
     routes: {
       cors: {
         origin: ['*'],
