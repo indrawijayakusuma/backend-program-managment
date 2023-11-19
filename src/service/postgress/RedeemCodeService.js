@@ -1,5 +1,6 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const InvariantError = require('../../exceptions/InvariantError');
 
 class RedeemCodeService {
   constructor() {
@@ -37,14 +38,27 @@ class RedeemCodeService {
 
   async getRedeemCode(noKtp) {
     const query = {
-      text: 'SELECT * FROM redeem_codes WHERE no_ktp = $1',
+      text: 'SELECT * FROM redeem_codes WHERE no_ktp = $1 AND "isUsed" = false',
       values: [noKtp],
     };
     const result = await this.pool.query(query);
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan redeem code');
+      throw new InvariantError('Gagal mendapatkan redeem code');
     }
     return result.rows;
+  }
+
+  async updateStatusRedeemCode(noKtp) {
+    const { code } = await this.getRedeemCode(noKtp);
+    const query = {
+      text: 'UPDATE redeem_codes SET "isUsed" = true WHERE code = $1 returning id',
+      values: [code],
+    };
+    const result = await this.pool.query(query);
+
+    if (!result.rowCount) {
+      throw new Error('Gagal mendapatkan redeem code');
+    }
   }
 }
 

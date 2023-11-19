@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const InvariantError = require('../../exceptions/InvariantError');
 
 class VisitorServices {
   constructor(customerService) {
@@ -13,7 +14,12 @@ class VisitorServices {
     };
 
     const result = await this.pool.query(query);
-    return result.rows;
+    return result.rows.map((row) => ({
+      no_ktp: row.no_ktp,
+      name: row.name,
+      rekening: row.rekening,
+      setoran: row.setoran,
+    }));
   }
 
   async addVisitor({
@@ -26,7 +32,7 @@ class VisitorServices {
     await this.customerService.addCustomer(noKtp, name, rekening);
     const result = await this.pool.query(query);
     if (!result.rows[0].no_ktp) {
-      throw new Error('Gagal menambahkan visitor');
+      throw new InvariantError('Gagal menambahkan visitor');
     }
     return result.rows[0];
   }

@@ -17,6 +17,10 @@ exports.up = (pgm) => {
       notNull: true,
       unique: true,
     },
+    image: {
+      type: 'TEXT',
+      notNull: true,
+    },
     date: {
       type: 'TEXT',
       notNull: true,

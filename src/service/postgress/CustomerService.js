@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const InvariantError = require('../../exceptions/InvariantError');
 
 class CusttomerService {
   constructor() {
@@ -20,13 +21,13 @@ class CusttomerService {
 
   async getCustomerByRedeemCode(code) {
     const query = {
-      text: 'SELECT customers.name, customers.rekening, customers.no_ktp, customers.type FROM customers RIGHT JOIN redeem_codes ON customers.no_ktp = redeem_codes.no_ktp WHERE redeem_codes.code = $1',
+      text: 'SELECT customers.name, customers.rekening, customers.no_ktp, customers.type FROM customers RIGHT JOIN redeem_codes ON customers.no_ktp = redeem_codes.no_ktp WHERE redeem_codes.code = $1 AND redeem_codes."isUsed" = false',
       values: [code],
     };
 
     const result = await this.pool.query(query);
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan redeem code');
+      throw new InvariantError('QR-code tidak valid atau sudah digunakan');
     }
     return result.rows[0];
   }

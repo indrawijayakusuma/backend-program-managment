@@ -1,5 +1,6 @@
 class VisitorHandler {
-  constructor(visitorService, redeemCodeService) {
+  constructor(visitorService, redeemCodeService, validator) {
+    this.validator = validator;
     this.visitorService = visitorService;
     this.redeemCodeService = redeemCodeService;
   }
@@ -21,7 +22,8 @@ class VisitorHandler {
       name,
       rekening,
     } = request.payload;
-
+    this.validator.validateVisitorPayload(request.payload);
+    console.log('ewfew');
     await this.visitorService.addVisitor({
       noKtp,
       setoran,
