@@ -32,5 +32,7 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
+  pgm.dropConstraint('winners', 'fk_winners.no_ktp_customers.no_ktp');
+  pgm.dropConstraint('winners', 'fk_winners.gift_id_gifts.id');
   pgm.dropTable('winners');
 };
