@@ -32,9 +32,6 @@ class WinnerService {
     };
 
     const result = await this.pool.query(query);
-    if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan winner');
-    }
     return result.rows;
   }
 
