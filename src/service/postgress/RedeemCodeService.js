@@ -16,7 +16,7 @@ class RedeemCodeService {
     };
     const result = await this.pool.query(query);
     if (!result.rows[0].id) {
-      throw new Error('Gagal menambahkan redeem code');
+      throw new InvariantError('Gagal menambahkan redeem code');
     }
     return result.rows[0];
   }
@@ -30,9 +30,7 @@ class RedeemCodeService {
       values: [],
     };
     const result = await this.pool.query(query);
-    if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan redeem code');
-    }
+
     return result.rows;
   }
 
@@ -57,7 +55,7 @@ class RedeemCodeService {
     const result = await this.pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan redeem code');
+      throw new InvariantError('Gagal mendapatkan redeem code');
     }
   }
 }

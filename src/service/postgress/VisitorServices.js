@@ -15,7 +15,7 @@ class VisitorServices {
 
     const result = await this.pool.query(query);
     return result.rows.map((row) => ({
-      no_ktp: row.no_ktp,
+      noKtp: row.no_ktp,
       name: row.name,
       rekening: row.rekening,
       setoran: row.setoran,
@@ -29,7 +29,7 @@ class VisitorServices {
       text: 'INSERT INTO visitors VALUES ($1, $2) returning no_ktp',
       values: [noKtp, setoran],
     };
-    await this.customerService.addCustomer(noKtp, name, rekening);
+    await this.customerService.addCustomer(noKtp, name, rekening, 'visitor');
     const result = await this.pool.query(query);
     if (!result.rows[0].no_ktp) {
       throw new InvariantError('Gagal menambahkan visitor');

@@ -3,9 +3,14 @@ const path = require('path');
 const Hapi = require('@hapi/hapi');
 
 const Inert = require('@hapi/inert');
+
 const visitor = require('./api/visitor');
 const VisitorService = require('./service/postgress/VisitorServices');
 const VisitorValidator = require('./validator/visitorValidator');
+
+const merchant = require('./api/merchant');
+const MerchantService = require('./service/postgress/MerchantService');
+const MerchantValidator = require('./validator/MerchantValidator');
 
 const customer = require('./api/customer');
 const CustomerService = require('./service/postgress/CustomerService');
@@ -20,12 +25,17 @@ const ClientError = require('./exceptions/ClientError');
 const StorageService = require('./service/storage/StorageService');
 const UploadsValidator = require('./validator/uploads');
 
+const gift = require('./api/gift');
+const GiftService = require('./service/postgress/GiftService');
+
 const init = async () => {
   const customerService = new CustomerService();
   const visitorService = new VisitorService(customerService);
+  const merchantService = new MerchantService(customerService);
   const redeemCodeService = new RedeemCodeService();
   const winnerService = new WinnerService(redeemCodeService);
   const storageService = new StorageService(path.resolve(__dirname, 'api/winner/file/images'));
+  const giftService = new GiftService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -53,6 +63,14 @@ const init = async () => {
       },
     },
     {
+      plugin: merchant,
+      options: {
+        service: merchantService,
+        redeemCodeService,
+        validator: MerchantValidator,
+      },
+    },
+    {
       plugin: redeemCode,
       options: {
         service: redeemCodeService,
@@ -70,6 +88,12 @@ const init = async () => {
         service: winnerService,
         storageService,
         imageValidator: UploadsValidator,
+      },
+    },
+    {
+      plugin: gift,
+      options: {
+        service: giftService,
       },
     },
   ]);

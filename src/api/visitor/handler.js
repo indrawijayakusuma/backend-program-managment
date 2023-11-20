@@ -23,7 +23,6 @@ class VisitorHandler {
       rekening,
     } = request.payload;
     this.validator.validateVisitorPayload(request.payload);
-    console.log('ewfew');
     await this.visitorService.addVisitor({
       noKtp,
       setoran,

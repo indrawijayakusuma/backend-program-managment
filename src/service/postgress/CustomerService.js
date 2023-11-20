@@ -6,15 +6,15 @@ class CusttomerService {
     this.pool = new Pool();
   }
 
-  async addCustomer(noKtp, name, rekening) {
+  async addCustomer(noKtp, name, rekening, type) {
     const query = {
       text: 'INSERT INTO customers VALUES ($1, $2, $3, $4) returning no_ktp',
-      values: [noKtp, name, rekening, 'customer'],
+      values: [noKtp, name, rekening, type],
     };
 
     const result = await this.pool.query(query);
     if (!result.rows[0].no_ktp) {
-      throw new Error('Gagal menambahkan customer');
+      throw new InvariantError('Gagal menambahkan customer');
     }
     return result.rows[0];
   }

@@ -21,7 +21,7 @@ class WinnerService {
     const result = await this.pool.query(query);
 
     if (!result.rows[0].id) {
-      throw new Error('Gagal menambahkan winner');
+      throw new InvariantError('Gagal menambahkan winner');
     }
     return result.rows[0].id;
   }

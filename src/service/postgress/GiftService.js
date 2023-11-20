@@ -1,23 +1,24 @@
-import { Pool } from 'pg';
+const { Pool } = require('pg');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class GiftService {
   constructor() {
     this.pool = new Pool();
   }
 
-  async getGift() {
+  async getGift(type) {
     const query = {
-      text: 'SELECT name FROM gifts',
-      values: [],
+      text: 'SELECT id, name FROM gifts WHERE type = $1',
+      values: [type],
     };
 
     const result = await this.pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan gift');
+      throw new NotFoundError('Hadiah tidak ditemukan');
     }
     return result.rows;
   }
 }
 
-export default GiftService;
+module.exports = GiftService;
