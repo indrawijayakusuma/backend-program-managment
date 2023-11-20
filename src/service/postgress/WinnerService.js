@@ -1,6 +1,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class WinnerService {
   constructor(redeemCodeService) {
@@ -33,6 +34,19 @@ class WinnerService {
 
     const result = await this.pool.query(query);
     return result.rows;
+  }
+
+  async getWinnersByKtp(ktp) {
+    const query = {
+      text: 'SELECT customers.name, customers.rekening, customers.type, gifts.name as gift, winners.date, winners.image FROM winners LEFT JOIN customers ON winners.no_ktp = customers.no_ktp LEFT JOIN gifts ON winners.gift_id = gifts.id WHERE winners.no_ktp = $1',
+      values: [ktp],
+    };
+    const result = await this.pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('peserta dengan ktp tersebut belum mendapatkan hadiah atau tidak valid');
+    }
+    return result.rows[0];
   }
 
   async ValidateWinnersByKtp(noKtp) {

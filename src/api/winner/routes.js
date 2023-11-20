@@ -10,7 +10,7 @@ const routes = (Handler) => [
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
-        maxBytes: 1000 * 500,
+        maxBytes: 1000 * 900,
       },
     },
   },
@@ -27,6 +27,11 @@ const routes = (Handler) => [
         path: path.resolve(__dirname, 'file'),
       },
     },
+  },
+  {
+    method: 'GET',
+    path: '/winners/ktp/{ktp}',
+    handler: (request, h) => Handler.getWinnersByKtp(request, h),
   },
 ];
 

@@ -38,12 +38,12 @@ class RedeemCodeService {
 
   async getRedeemCode(noKtp) {
     const query = {
-      text: 'SELECT * FROM redeem_codes WHERE no_ktp = $1 AND "isUsed" = false',
+      text: 'SELECT * FROM redeem_codes WHERE no_ktp = $1',
       values: [noKtp],
     };
     const result = await this.pool.query(query);
     if (!result.rowCount) {
-      throw new InvariantError('Gagal mendapatkan redeem code');
+      throw new InvariantError('KTP tidak valid atau belum terdaftar');
     }
     return result.rows;
   }

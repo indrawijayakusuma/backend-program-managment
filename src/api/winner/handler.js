@@ -8,7 +8,6 @@ class WinnerHandler {
 
   async postWinner(request, h) {
     const { giftId, no_ktp, image } = request.payload;
-    console.log(request.payload);
     this.imageValidator.validatePostWinnerPayload({ giftId, no_ktp, image });
     this.imageValidator.validateImageHeaders(image.hapi.headers);
     await this.service.ValidateWinnersByKtp(no_ktp);
@@ -27,6 +26,15 @@ class WinnerHandler {
 
   async getWinners(request, h) {
     const result = await this.service.getWinners();
+    return h.response({
+      status: 'success',
+      data: result,
+    });
+  }
+
+  async getWinnersByKtp(request, h) {
+    const { ktp } = request.params;
+    const result = await this.service.getWinnersByKtp(ktp);
     return h.response({
       status: 'success',
       data: result,
