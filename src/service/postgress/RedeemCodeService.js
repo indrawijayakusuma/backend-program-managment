@@ -21,17 +21,29 @@ class RedeemCodeService {
     return result.rows[0];
   }
 
-  async getAllRedeemCode() {
-    const query = {
-      text: `SELECT redeem_codes.code, redeem_codes."isUsed", customers.name, customers.rekening
-      FROM redeem_codes
-      LEFT JOIN customers ON redeem_codes.no_ktp = customers.no_ktp
-      WHERE redeem_codes."isUsed" = false`,
-      values: [],
-    };
-    const result = await this.pool.query(query);
+  async getAllRedeemCode({ search }) {
+    let query;
+    if (search) {
+      query = {
+        text: `SELECT redeem_codes.code, redeem_codes."isUsed", customers.name, customers.rekening
+        FROM redeem_codes
+        LEFT JOIN customers ON redeem_codes.no_ktp = customers.no_ktp
+        WHERE LOWER(customers.name) LIKE LOWER($1)
+        OR LOWER(customers.rekening) LIKE LOWER($1)`,
+        values: [search],
+      };
+    } else {
+      query = {
+        text: `SELECT redeem_codes.code, redeem_codes."isUsed", customers.name, customers.rekening
+        FROM redeem_codes
+        LEFT JOIN customers ON redeem_codes.no_ktp = customers.no_ktp`,
+      };
+    }
 
-    return result.rows;
+    const result = await this.pool.query(query);
+    const data = result.rows.filter((row) => row.isUsed === false);
+
+    return data;
   }
 
   async getRedeemCode(noKtp) {

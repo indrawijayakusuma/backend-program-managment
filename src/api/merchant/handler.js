@@ -5,8 +5,9 @@ class MerchantHandler {
     this.redeemCodeService = redeemCodeService;
   }
 
-  async getMerchants() {
-    const merchants = await this.service.getMerchant();
+  async getMerchants(request) {
+    const { search, page = 1, limit = 5 } = request.query;
+    const merchants = await this.service.getMerchant({ search, limit, page });
     return {
       status: 'success',
       data: {

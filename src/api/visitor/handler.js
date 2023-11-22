@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 class VisitorHandler {
   constructor(visitorService, redeemCodeService, validator) {
     this.validator = validator;
@@ -5,8 +6,9 @@ class VisitorHandler {
     this.redeemCodeService = redeemCodeService;
   }
 
-  async getVisitor() {
-    const visitor = await this.visitorService.getVisitor();
+  async getVisitor(request) {
+    let { search, page = 1, limit = 5 } = request.query;
+    const visitor = await this.visitorService.getVisitor({ search, limit, page });
     return {
       status: 'success',
       data: {

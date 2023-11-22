@@ -13,7 +13,8 @@ class RedeemCodeHandler {
   }
 
   async getAllRedeemCode(request, h) {
-    const result = await this.service.getAllRedeemCode();
+    const { search } = request.query;
+    const result = await this.service.getAllRedeemCode({ search });
     return h.response({
       status: 'success',
       data: result,

@@ -27,6 +27,7 @@ const UploadsValidator = require('./validator/uploads');
 
 const gift = require('./api/gift');
 const GiftService = require('./service/postgress/GiftService');
+const GiftValidator = require('./validator/gift');
 
 const init = async () => {
   const customerService = new CustomerService();
@@ -94,6 +95,7 @@ const init = async () => {
       plugin: gift,
       options: {
         service: giftService,
+        validator: GiftValidator,
       },
     },
   ]);
