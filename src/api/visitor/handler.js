@@ -7,7 +7,7 @@ class VisitorHandler {
   }
 
   async getVisitor(request) {
-    let { search, page = 1, limit = 5 } = request.query;
+    let { search, page = 1, limit = 10 } = request.query;
     const visitor = await this.visitorService.getVisitor({ search, limit, page });
     return {
       status: 'success',

@@ -23,14 +23,15 @@ class RedeemCodeService {
 
   async getAllRedeemCode({ search }) {
     let query;
+    const searchAdd = `%${search}%`;
     if (search) {
       query = {
         text: `SELECT redeem_codes.code, redeem_codes."isUsed", customers.name, customers.rekening
         FROM redeem_codes
         LEFT JOIN customers ON redeem_codes.no_ktp = customers.no_ktp
-        WHERE LOWER(customers.name) LIKE LOWER($1)
+        WHERE LOWER(customers.name) LIKE LOWER($1) 
         OR LOWER(customers.rekening) LIKE LOWER($1)`,
-        values: [search],
+        values: [searchAdd],
       };
     } else {
       query = {
@@ -41,6 +42,7 @@ class RedeemCodeService {
     }
 
     const result = await this.pool.query(query);
+    console.log(result.rows);
     const data = result.rows.filter((row) => row.isUsed === false);
 
     return data;

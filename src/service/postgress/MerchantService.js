@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class MerchantService {
   constructor(customerService) {
@@ -36,6 +37,9 @@ class MerchantService {
     }
 
     const result = await this.pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundError('Merchant tidak ditemukan');
+    }
     const merchants = result.rows.map((row) => ({
       noKtp: row.no_ktp,
       name: row.name,

@@ -25,7 +25,8 @@ class WinnerHandler {
   }
 
   async getWinners(request, h) {
-    const result = await this.service.getWinners();
+    const { search, page = 1, limit = 10 } = request.query;
+    const result = await this.service.getWinners({ search, limit, page });
     return h.response({
       status: 'success',
       data: result,
