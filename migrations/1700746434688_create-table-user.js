@@ -3,23 +3,27 @@
 exports.shorthands = undefined;
 
 exports.up = (pgm) => {
-  pgm.createTable('merchants', {
-    no_ktp: {
-      type: 'VARCHAR(16)',
+  pgm.createTable('users', {
+    id: {
+      type: 'VARCHAR(50)',
       primaryKey: true,
     },
-    merchant_name: {
+    username: {
+      type: 'TEXT',
+      unique: true,
+      notNull: true,
+    },
+    password: {
       type: 'TEXT',
       notNull: true,
     },
-    no_booth: {
-      type: 'INT',
-      unique: true,
+    fullname: {
+      type: 'TEXT',
       notNull: true,
     },
   });
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable('merchants');
+  pgm.dropTable('users');
 };

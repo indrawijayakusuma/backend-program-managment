@@ -1,6 +1,7 @@
 require('dotenv').config();
 const path = require('path');
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 
 const Inert = require('@hapi/inert');
 
@@ -29,6 +30,15 @@ const gift = require('./api/gift');
 const GiftService = require('./service/postgress/GiftService');
 const GiftValidator = require('./validator/gift');
 
+const users = require('./api/users');
+const UsersService = require('./service/postgress/UsersService');
+const UserValidator = require('./validator/users');
+
+const authentications = require('./api/authentications');
+const AuthenticationsService = require('./service/postgress/AuthenticationsService');
+const TokenManager = require('./tokenize/TokenManager');
+const AuthenticationsValidator = require('./validator/authentications');
+
 const init = async () => {
   const customerService = new CustomerService();
   const visitorService = new VisitorService(customerService);
@@ -37,6 +47,8 @@ const init = async () => {
   const winnerService = new WinnerService(redeemCodeService);
   const storageService = new StorageService(path.resolve(__dirname, 'api/winner/file/images'));
   const giftService = new GiftService();
+  const usersService = new UsersService();
+  const authenticationsService = new AuthenticationsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -46,6 +58,29 @@ const init = async () => {
         origin: ['*'],
       },
     },
+  });
+
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
+
+  server.auth.strategy('auth_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+      timeSkewSec: 15,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   await server.register([
@@ -96,6 +131,22 @@ const init = async () => {
       options: {
         service: giftService,
         validator: GiftValidator,
+      },
+    },
+    {
+      plugin: users,
+      options: {
+        service: usersService,
+        validator: UserValidator,
+      },
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
       },
     },
   ]);

@@ -6,6 +6,7 @@ const routes = (Handler) => [
     path: '/winners',
     handler: (request, h) => Handler.postWinner(request, h),
     options: {
+      auth: 'auth_jwt',
       payload: {
         allow: 'multipart/form-data',
         multipart: true,
@@ -18,6 +19,9 @@ const routes = (Handler) => [
     method: 'GET',
     path: '/winners',
     handler: (request, h) => Handler.getWinners(request, h),
+    options: {
+      auth: 'auth_jwt',
+    },
   },
   {
     method: 'GET',
